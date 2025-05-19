@@ -1,0 +1,75 @@
+#orphan-notes-container h3 {
+  color: #000;
+}
+#orphan-notes-container {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+  background: #fff7aa;
+  border: 1px solid #000;
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 12px;
+  color: #000;
+  z-index: 99999;
+}
+
+.sticky-note-box {
+  position: absolute;
+  z-index: 10001;
+  min-width: 180px;
+  max-width: 240px;
+  pointer-events: auto;
+  background: #fff7aa;
+  border: 1px solid #000;
+  color: #000;
+  padding: 6px;
+  font-size: "12px";
+  border-radius: "8px";
+}
+#sticky-note-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sticky-note-modal-box {
+  background: #fff7aa;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  max-width: 90%;
+}
+.sticky-note-dot {
+  position: absolute;
+  background: #fff7aa;
+  border: 1px solid #000;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  pointer-events: auto;
+}
+.import-export-bar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
