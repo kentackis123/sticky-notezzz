@@ -73,3 +73,27 @@
   top: 20px;
   right: 20px;
 }
+.action-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+.dash-note {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px;
+  background: #fff7aa;
+  border: 1px solid #000;
+}
+.accordion-header {
+  cursor: pointer;
+  font-weight: bold;
+  margin: 8px 0;
+  background: #f0f0f0;
+  padding: 6px;
+  border-radius: 4px;
+}

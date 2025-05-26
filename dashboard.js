@@ -3,6 +3,16 @@ chrome.storage.local.get(null).then((data) => {
   const container = document.getElementById("notesContainer");
   container.innerHTML = "";
 
+  function safeStorageGet(key) {
+    if (!chrome.runtime?.id) return Promise.resolve({});
+    return chrome.storage.local.get(key);
+  }
+
+  function safeStorageSet(data) {
+    if (!chrome.runtime?.id) return Promise.resolve();
+    return chrome.storage.local.set(data);
+  }
+
   // --- Import/Export Buttons ---
   const importExportBar = document.createElement("div");
   importExportBar.style.display = "flex";
@@ -111,18 +121,22 @@ chrome.storage.local.get(null).then((data) => {
   }
 
   // Helper to create accordion section
-  function createAccordion(title, contentEl) {
+  function createAccordion(title, contentEl, url = null) {
     const section = document.createElement("div");
     section.className = "accordion-section";
     const header = document.createElement("div");
     header.className = "accordion-header";
-    header.textContent = title;
-    header.style.cursor = "pointer";
-    header.style.fontWeight = "bold";
-    header.style.margin = "8px 0";
-    header.style.background = "#f0f0f0";
-    header.style.padding = "6px";
-    header.style.borderRadius = "4px";
+
+    if (url) {
+      const link = document.createElement("a");
+      link.href = url;
+      link.textContent = title;
+      link.target = "_blank";
+      link.style.color = "blue";
+      header.appendChild(link);
+    } else {
+      header.textContent = title;
+    }
 
     const content = document.createElement("div");
     content.className = "accordion-content";
@@ -169,33 +183,45 @@ chrome.storage.local.get(null).then((data) => {
             (hostname && hostname.toLowerCase().includes(filter.toLowerCase()))
           ) {
             const noteEl = document.createElement("div");
-            noteEl.className = "note";
-            noteEl.innerHTML = note.note; // Render as HTML
+            const noteTextEl = document.createElement("div");
+            noteTextEl.innerHTML = note.note; // Render as HTML
+            noteEl.appendChild(noteTextEl);
+            noteEl.className = "dash-note";
 
+            // Delete button
+            const deleteBtn = document.createElement("button");
+            deleteBtn.textContent = "Delete";
+            deleteBtn.addEventListener("click", async (e) => {
+              e.stopPropagation();
+              const key = `${hostname}${pathname}`;
+              const data = await safeStorageGet(key);
+              console.log("delete", key, data, note);
+              const notes = data[key] || [];
+              notes.splice(noteIdx, 1);
+              await safeStorageSet({ [key]: notes });
+              location.reload();
+            });
             // Edit button
             const editBtn = document.createElement("button");
             editBtn.textContent = "Edit";
-            editBtn.style.marginLeft = "8px";
             editBtn.onclick = () => {
               window.showNoteModal(note.note, async (newHTML) => {
-                note.note = newHTML;
-                chrome.storage.local.get(null).then((data) => {
-                  const key = Object.keys(data).find(
-                    (k) =>
-                      data[k] === notes ||
-                      (Array.isArray(data[k]) && data[k][noteIdx] === note)
+                const key = `${hostname}${pathname}`;
+                chrome.storage.local.get(key, (data) => {
+                  const notesArr = data[key] || [];
+                  notesArr[noteIdx].note = newHTML;
+                  chrome.storage.local.set({ [key]: notesArr }, () =>
+                    location.reload()
                   );
-                  if (key) {
-                    data[key][noteIdx].note = newHTML;
-                    chrome.storage.local.set({ [key]: data[key] }, () =>
-                      location.reload()
-                    );
-                  }
                 });
               });
             };
-            noteEl.appendChild(editBtn);
 
+            const actionBar = document.createElement("div");
+            actionBar.classList.add("action-bar");
+            actionBar.appendChild(editBtn);
+            actionBar.appendChild(deleteBtn);
+            noteEl.appendChild(actionBar);
             pathSection.appendChild(noteEl);
             pathHasMatch = true;
             hostHasMatch = true;
@@ -204,13 +230,15 @@ chrome.storage.local.get(null).then((data) => {
 
         // Accordion for pathname if any match
         if (pathHasMatch) {
-          hostSection.appendChild(createAccordion(pathname, pathSection));
+          const url = `https://${hostname}${pathname}`;
+          hostSection.appendChild(createAccordion(pathname, pathSection, url));
         }
       }
 
       // Accordion for hostname if any match
       if (hostHasMatch) {
-        container.appendChild(createAccordion(hostname, hostSection));
+        const url = `https://${hostname}`;
+        container.appendChild(createAccordion(hostname, hostSection, url));
       }
     }
   }

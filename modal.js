@@ -54,7 +54,8 @@ window.showNoteModal = function (initialHTML = "", onSave) {
   const editor = document.createElement("div");
   editor.contentEditable = "true";
   editor.style.border = "1px solid #ccc";
-  editor.style.minHeight = "60px";
+  editor.style.minHeight = "80px";
+  editor.style.color = "#000";
   editor.style.padding = "8px";
   editor.innerHTML = initialHTML;
 

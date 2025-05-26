@@ -4,6 +4,7 @@
   let currentTarget = null;
   let showAllNotes = true;
   let orphanContainer = null;
+  let showOrphans = true;
   let lastRenderedNotesJSON = "";
 
   function safeStorageGet(key) {
@@ -35,8 +36,30 @@
     return container;
   }
 
+  async function isNotesEnabledForSite() {
+    const { notesEnabled = true, disabledSites = [] } =
+      await chrome.storage.local.get(["notesEnabled", "disabledSites"]);
+    if (notesEnabled === false) return false;
+    return !disabledSites.includes(location.hostname);
+  }
+
+  // Wrap renderNotes and note-adding logic:
+  async function maybeRenderNotes() {
+    const isEnabled = await isNotesEnabledForSite();
+    if (isEnabled) {
+      renderNotes();
+    } else {
+      // Optionally, hide all notes UI
+      document
+        .querySelectorAll(
+          ".sticky-note-dot, .sticky-note-box, #orphan-notes-container"
+        )
+        .forEach((n) => n.remove());
+    }
+  }
+
   ensureNoteOverlayContainer();
-  renderNotes();
+  maybeRenderNotes();
 
   async function startNewNote(e) {
     if (!e.altKey || !currentTarget) return;
@@ -66,7 +89,7 @@
         pinned: false,
       });
       await safeStorageSet({ [key]: notes });
-      renderNotes();
+      maybeRenderNotes();
       removeHighlight();
       currentTarget = null;
     });
@@ -75,7 +98,12 @@
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === "TOGGLE_NOTES") {
       showAllNotes = !showAllNotes;
-      renderNotes();
+      maybeRenderNotes();
+    }
+    if (message.type === "TOGGLE_ORPHANS") {
+      console.log("TOGGLE_ORPHANS", message);
+      showOrphans = message.show;
+      maybeRenderNotes();
     }
     if (message.type === "CONTEXT_ADD_NOTE") {
       // Use the last hovered element or prompt user to click one
@@ -112,7 +140,7 @@
             pinned: false,
           });
           await safeStorageSet({ [key]: notes });
-          renderNotes();
+          maybeRenderNotes();
           removeHighlight();
           currentTarget = null;
         });
@@ -208,7 +236,7 @@
         const notes = data[key] || [];
         notes[index].note = newHTML;
         await safeStorageSet({ [key]: notes });
-        renderNotes();
+        maybeRenderNotes();
       });
     };
     noteBox.appendChild(editBtn);
@@ -236,7 +264,7 @@
       const notes = data[key] || [];
       notes[index].pinned = !notes[index].pinned;
       await safeStorageSet({ [key]: notes });
-      renderNotes();
+      maybeRenderNotes();
     });
 
     // Note hover highlights element
@@ -254,7 +282,7 @@
     const noteDiv = document.createElement("div");
     noteDiv.style.marginBottom = "6px";
     noteDiv.style.cursor = "pointer";
-    noteDiv.title = selector.primary || selector.path;
+    noteDiv.title = selector.primary || note;
     noteDiv.textContent = note.length > 60 ? note.slice(0, 60) + "..." : note;
 
     // add remove button
@@ -271,7 +299,7 @@
       const notes = data[key] || [];
       notes.splice(index, 1);
       await safeStorageSet({ [key]: notes });
-      renderNotes();
+      maybeRenderNotes();
     });
 
     // add copy button
@@ -293,7 +321,6 @@
       // Try to find the closest ancestor matching selector.path, but skip if it's inside the orphan notes board
       let path = selector.path;
       let found = null;
-      console.log("path", path);
       while (path && path.length > 0) {
         try {
           const candidate = document.querySelector(path);
@@ -308,7 +335,6 @@
         // Remove last > segment and try again
         path = path.replace(/\s*>\s*[^>]+$/, "");
       }
-      console.log("found", found);
       if (found) {
         highlightElement(found);
         found.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -369,10 +395,11 @@
     lastRenderedNotesJSON = JSON.stringify(rendered);
 
     // handle orphans
-    if (orphans.length > 0) {
+    if (showOrphans && orphans.length > 0) {
+      console.log("kuria orphanus", showOrphans);
       orphanContainer = document.createElement("div");
       orphanContainer.id = "orphan-notes-container";
-      orphanContainer.innerHTML = "<h3>Unattached Notes:</h3>";
+      orphanContainer.innerHTML = "<h3>Notes not yet on screen:</h3>";
 
       orphans.forEach(renderOrphan);
 
@@ -383,14 +410,14 @@
   /**
    * Determine when to call render notes
    */
-  window.addEventListener("DOMContentLoaded", renderNotes);
-  window.addEventListener("scrollend", renderNotes);
-  window.addEventListener("resize", renderNotes);
+  window.addEventListener("DOMContentLoaded", maybeRenderNotes);
+  window.addEventListener("scrollend", maybeRenderNotes);
+  window.addEventListener("resize", maybeRenderNotes);
 
   let renderTimeout;
   const observer = new MutationObserver(() => {
     clearTimeout(renderTimeout);
-    renderTimeout = setTimeout(renderNotes, 2000); // wait 2s after last mutation before rendering
+    renderTimeout = setTimeout(maybeRenderNotes, 2000); // wait 2s after last mutation before rendering
   });
   observer.observe(document.body, { childList: true, subtree: true });
 
