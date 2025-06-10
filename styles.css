@@ -5,18 +5,31 @@
   top: 10px;
   right: 10px;
   width: 300px;
-  max-height: 400px;
-  overflow-y: auto;
+  max-height: 100vh;
+  overflow-y: hidden;
   border: 1px solid #000;
+  padding-left: 8px;
+  padding-right: 8px;
   border-radius: 8px;
   font-size: 12px;
   color: #000;
   z-index: 99999;
   & > div {
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    gap: 4px;
+    max-height: 30px;
     &:first-child {
       font-size: 14px;
       font-weight: bold;
     }
+  }
+  .remove-orphan-btn {
+    font-size: 12px;
+    height: 26px;
+    cursor: pointer;
+    margin-top: 2px;
   }
 }
 
@@ -24,6 +37,8 @@
   font-family: sans-serif;
   width: 200px;
   border-radius: 8px;
+  margin: 0;
+  padding: 0;
   button {
     width: 100%;
     padding-top: 5px;
@@ -44,27 +59,48 @@
     text-align: center;
     font-size: 14px;
     font-weight: bold;
-    margin-top: -4px;
+    line-height: 30px;
+  }
+  & > label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    line-height: 20px;
+    padding: 5px 0 0;
   }
 }
 
 .notebook-wrapper {
   background: repeating-linear-gradient(to bottom, #fff7aa 0px, #fff7aa 29px, #e2c97f 30px);
-  padding-left: 8px;
-  padding-right: 8px;
-  padding-top: 0;
-  padding-bottom: 0;
-  & > div,
-  & > label {
-    padding-top: 5px;
-    padding-bottom: 4px;
-    line-height: 20px;
+  padding: 0;
+  & > div {
+    line-height: 30px;
     font-size: 12px;
+  }
+}
+
+.sticky-note-box,
+.sticky-note-modal-box,
+#orphan-notes-container {
+  button {
+    background: #e2c97f;
+    border: 1px solid #ccc;
+    padding: 4px;
+    cursor: pointer;
+    &:hover {
+      background: #ccc;
+    }
+  }
+  ul,
+  ol {
+    padding-left: 20px;
   }
 }
 
 .sticky-note-box {
   font-family: sans-serif;
+  border-radius: 8px;
   position: absolute;
   z-index: 10001;
   min-width: 180px;
@@ -73,12 +109,14 @@
   background: #fff7aa;
   border: 1px solid #000;
   color: #000;
-  padding: 6px;
-  font-size: "12px";
-  border-radius: "8px";
+  padding: 10px;
+  font-size: 12px;
+  button {
+    display: block;
+    margin: 10px 0 0 0;
+  }
 }
 #sticky-note-modal {
-  font-family: monospace;
   position: fixed;
   top: 0;
   left: 0;
@@ -101,6 +139,7 @@
   position: absolute;
   background: #fff7aa;
   border: 1px solid #000;
+  color: #000;
   border-radius: 50%;
   width: 16px;
   height: 16px;

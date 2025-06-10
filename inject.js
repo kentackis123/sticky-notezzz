@@ -225,9 +225,6 @@
     // --- Add Edit Button ---
     const editBtn = document.createElement("button");
     editBtn.textContent = "Edit";
-    editBtn.style.marginLeft = "8px";
-    editBtn.style.fontSize = "12px";
-    editBtn.style.cursor = "pointer";
     editBtn.onclick = async (e) => {
       e.stopPropagation();
       window.showNoteModal(noteData.note, async (newHTML) => {
@@ -288,9 +285,7 @@
     // add remove button
     const removeBtn = document.createElement("button");
     removeBtn.textContent = "×";
-    removeBtn.style.marginLeft = "8px";
-    removeBtn.style.fontSize = "12px";
-    removeBtn.style.cursor = "pointer";
+    removeBtn.className = "remove-orphan-btn";
 
     removeBtn.addEventListener("click", async (e) => {
       e.stopPropagation();

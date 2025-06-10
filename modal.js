@@ -1,3 +1,5 @@
+/** @format */
+
 window.showNoteModal = function (initialHTML = "", onSave) {
   // Remove any existing modal
   document.getElementById("sticky-note-modal")?.remove();
@@ -16,12 +18,14 @@ window.showNoteModal = function (initialHTML = "", onSave) {
   boldBtn.type = "button";
   boldBtn.textContent = "B";
   boldBtn.style.fontWeight = "bold";
+  boldBtn.style.marginRight = "4px";
   boldBtn.onclick = () => document.execCommand("bold", false, null);
 
   const italicBtn = document.createElement("button");
   italicBtn.type = "button";
   italicBtn.textContent = "I";
   italicBtn.style.fontStyle = "italic";
+  italicBtn.style.marginRight = "4px";
   italicBtn.onclick = () => document.execCommand("italic", false, null);
 
   const underlineBtn = document.createElement("button");
@@ -35,8 +39,7 @@ window.showNoteModal = function (initialHTML = "", onSave) {
   ulBtn.type = "button";
   ulBtn.textContent = "• List";
   ulBtn.style.marginLeft = "8px";
-  ulBtn.onclick = () =>
-    document.execCommand("insertUnorderedList", false, null);
+  ulBtn.onclick = () => document.execCommand("insertUnorderedList", false, null);
 
   // Ordered List button
   const olBtn = document.createElement("button");
