@@ -1,3 +1,5 @@
+/** @format */
+
 // inject.js
 (function () {
   let activeHighlight = null;
@@ -37,8 +39,10 @@
   }
 
   async function isNotesEnabledForSite() {
-    const { notesEnabled = true, disabledSites = [] } =
-      await chrome.storage.local.get(["notesEnabled", "disabledSites"]);
+    const { notesEnabled = true, disabledSites = [] } = await chrome.storage.local.get([
+      "notesEnabled",
+      "disabledSites",
+    ]);
     if (notesEnabled === false) return false;
     return !disabledSites.includes(location.hostname);
   }
@@ -46,14 +50,16 @@
   // Wrap renderNotes and note-adding logic:
   async function maybeRenderNotes() {
     const isEnabled = await isNotesEnabledForSite();
+    // determine whether show orphans window
+    chrome.storage.local.get(["showOrphans"], (data) => {
+      showOrphans = !!data.showOrphans;
+    });
     if (isEnabled) {
       renderNotes();
     } else {
       // Optionally, hide all notes UI
       document
-        .querySelectorAll(
-          ".sticky-note-dot, .sticky-note-box, #orphan-notes-container"
-        )
+        .querySelectorAll(".sticky-note-dot, .sticky-note-box, #orphan-notes-container")
         .forEach((n) => n.remove());
     }
   }
@@ -101,7 +107,6 @@
       maybeRenderNotes();
     }
     if (message.type === "TOGGLE_ORPHANS") {
-      console.log("TOGGLE_ORPHANS", message);
       showOrphans = message.show;
       maybeRenderNotes();
     }
@@ -173,9 +178,7 @@
       ) {
         const parent = el.parentNode;
         if (parent) {
-          const sameTagSiblings = Array.from(parent.children).filter(
-            (child) => child.nodeName === el.nodeName
-          );
+          const sameTagSiblings = Array.from(parent.children).filter((child) => child.nodeName === el.nodeName);
           const sameTextCount = sameTagSiblings.filter(
             (child) => child.textContent && child.textContent.trim() === text
           ).length;
@@ -193,9 +196,7 @@
   }
 
   function renderNote(noteData, index) {
-    const target = document.querySelector(
-      noteData.selector.primary || noteData.selector.path
-    );
+    const target = document.querySelector(noteData.selector.primary || noteData.selector.path);
     if (!target) return;
 
     // Get bounding rect for positioning
@@ -280,10 +281,9 @@
 
   async function renderOrphan({ note, selector, index }) {
     const noteDiv = document.createElement("div");
-    noteDiv.style.marginBottom = "6px";
     noteDiv.style.cursor = "pointer";
     noteDiv.title = selector.primary || note;
-    noteDiv.textContent = note.length > 60 ? note.slice(0, 60) + "..." : note;
+    noteDiv.innerHTML = note;
 
     // add remove button
     const removeBtn = document.createElement("button");
@@ -365,9 +365,7 @@
     }
 
     // clean up
-    document
-      .querySelectorAll(".sticky-note-dot, .sticky-note-box")
-      .forEach((n) => n.remove());
+    document.querySelectorAll(".sticky-note-dot, .sticky-note-box").forEach((n) => n.remove());
     if (orphanContainer) orphanContainer.remove();
     orphanContainer = null;
     removeHighlight();
@@ -376,9 +374,7 @@
 
     notes.forEach((noteData, index) => {
       try {
-        const el = document.querySelector(
-          noteData.selector.primary || noteData.selector.path
-        );
+        const el = document.querySelector(noteData.selector.primary || noteData.selector.path);
         if (el) {
           renderNote(noteData, index);
           rendered.push(noteData);
@@ -396,10 +392,10 @@
 
     // handle orphans
     if (showOrphans && orphans.length > 0) {
-      console.log("kuria orphanus", showOrphans);
       orphanContainer = document.createElement("div");
       orphanContainer.id = "orphan-notes-container";
-      orphanContainer.innerHTML = "<h3>Notes not yet on screen:</h3>";
+      orphanContainer.className = "notebook-wrapper";
+      orphanContainer.innerHTML = "<div>Notes not yet on screen:</div>";
 
       orphans.forEach(renderOrphan);
 
@@ -453,8 +449,7 @@
    */
   function getBestSelector(el) {
     if (el.id) return `#${el.id}`;
-    if (el.getAttribute("aria-label"))
-      return `[aria-label="${el.getAttribute("aria-label")}"]`;
+    if (el.getAttribute("aria-label")) return `[aria-label="${el.getAttribute("aria-label")}"]`;
     if (el.name) return `[name="${el.name}"]`;
 
     // Check for unique text content (short, non-empty, not just whitespace)
@@ -469,9 +464,7 @@
 
       if (parent) {
         // Get siblings of same tag name
-        const sameTagSiblings = Array.from(parent.children).filter(
-          (child) => child.nodeName === el.nodeName
-        );
+        const sameTagSiblings = Array.from(parent.children).filter((child) => child.nodeName === el.nodeName);
 
         // Count siblings with exactly the same trimmed text content
         const sameTextCount = sameTagSiblings.filter(
@@ -497,17 +490,13 @@
         const classes = el.className
           .trim()
           .split(/\s+/)
-          .filter(
-            (c) => !/\d/.test(c) && !c.startsWith("css-") && !c.includes("--")
-          )
+          .filter((c) => !/\d/.test(c) && !c.startsWith("css-") && !c.includes("--"))
           .join(".");
         if (classes) sel += `.${classes}`;
       }
       const parent = el.parentNode;
       if (parent) {
-        const siblings = Array.from(parent.children).filter(
-          (child) => child.nodeName === el.nodeName
-        );
+        const siblings = Array.from(parent.children).filter((child) => child.nodeName === el.nodeName);
         if (siblings.length > 1) {
           const index = siblings.indexOf(el) + 1;
           sel += `:nth-of-type(${index})`;

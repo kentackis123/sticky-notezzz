@@ -1,3 +1,5 @@
+/** @format */
+
 chrome.storage.local.get(null).then((data) => {
   const header = document.getElementById("header");
   const container = document.getElementById("notesContainer");
@@ -132,7 +134,6 @@ chrome.storage.local.get(null).then((data) => {
       link.href = url;
       link.textContent = title;
       link.target = "_blank";
-      link.style.color = "blue";
       header.appendChild(link);
     } else {
       header.textContent = title;
@@ -144,8 +145,7 @@ chrome.storage.local.get(null).then((data) => {
     content.appendChild(contentEl);
 
     header.addEventListener("click", () => {
-      content.style.display =
-        content.style.display === "none" ? "block" : "none";
+      content.style.display = content.style.display === "none" ? "block" : "none";
     });
 
     section.appendChild(header);
@@ -178,8 +178,7 @@ chrome.storage.local.get(null).then((data) => {
           if (
             !filter ||
             noteText.includes(filter.toLowerCase()) ||
-            (pathname &&
-              pathname.toLowerCase().includes(filter.toLowerCase())) ||
+            (pathname && pathname.toLowerCase().includes(filter.toLowerCase())) ||
             (hostname && hostname.toLowerCase().includes(filter.toLowerCase()))
           ) {
             const noteEl = document.createElement("div");
@@ -195,7 +194,6 @@ chrome.storage.local.get(null).then((data) => {
               e.stopPropagation();
               const key = `${hostname}${pathname}`;
               const data = await safeStorageGet(key);
-              console.log("delete", key, data, note);
               const notes = data[key] || [];
               notes.splice(noteIdx, 1);
               await safeStorageSet({ [key]: notes });
@@ -210,9 +208,7 @@ chrome.storage.local.get(null).then((data) => {
                 chrome.storage.local.get(key, (data) => {
                   const notesArr = data[key] || [];
                   notesArr[noteIdx].note = newHTML;
-                  chrome.storage.local.set({ [key]: notesArr }, () =>
-                    location.reload()
-                  );
+                  chrome.storage.local.set({ [key]: notesArr }, () => location.reload());
                 });
               });
             };

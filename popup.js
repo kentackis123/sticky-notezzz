@@ -1,3 +1,5 @@
+/** @format */
+
 document.addEventListener("DOMContentLoaded", () => {
   // 1. Toggle Notes Switch
   const toggleBtn = document.getElementById("toggleNotes");
@@ -31,9 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
         chrome.storage.local.get(["disabledSites"], (data) => {
           const disabledSites = data.disabledSites || [];
           const isDisabled = disabledSites.includes(url.hostname);
-          disableSiteBtn.textContent = isDisabled
-            ? "Enable for this site"
-            : "Disable for this site";
+          disableSiteBtn.textContent = isDisabled ? "Enable for this site" : "Disable for this site";
         });
       }
     });
@@ -51,18 +51,13 @@ document.addEventListener("DOMContentLoaded", () => {
               disabledSites.push(url.hostname);
             }
             chrome.storage.local.set({ disabledSites }, () => {
-              disableSiteBtn.textContent = isDisabled
-                ? "Disable for this site"
-                : "Enable for this site";
+              disableSiteBtn.textContent = isDisabled ? "Disable for this site" : "Enable for this site";
               // Optionally, notify content script to re-render
-              chrome.tabs.query(
-                { active: true, currentWindow: true },
-                ([tab]) => {
-                  if (tab?.id) {
-                    chrome.tabs.sendMessage(tab.id, { type: "TOGGLE_NOTES" });
-                  }
+              chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+                if (tab?.id) {
+                  chrome.tabs.sendMessage(tab.id, { type: "TOGGLE_NOTES" });
                 }
-              );
+              });
             });
           });
         }

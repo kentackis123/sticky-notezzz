@@ -1,23 +1,70 @@
-#orphan-notes-container h3 {
-  color: #000;
-}
+/** @format */
 #orphan-notes-container {
+  font-family: sans-serif;
   position: fixed;
   top: 10px;
   right: 10px;
   width: 300px;
   max-height: 400px;
   overflow-y: auto;
-  background: #fff7aa;
   border: 1px solid #000;
   border-radius: 8px;
-  padding: 8px;
   font-size: 12px;
   color: #000;
   z-index: 99999;
+  & > div {
+    &:first-child {
+      font-size: 14px;
+      font-weight: bold;
+    }
+  }
+}
+
+.menu-wrapper {
+  font-family: sans-serif;
+  width: 200px;
+  border-radius: 8px;
+  button {
+    width: 100%;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    line-height: 20px;
+    font-weight: 600;
+    &:hover {
+      background: #e2c97f;
+    }
+    &:first-of-type {
+      margin-top: 5px;
+    }
+  }
+  & > div:first-child {
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: -4px;
+  }
+}
+
+.notebook-wrapper {
+  background: repeating-linear-gradient(to bottom, #fff7aa 0px, #fff7aa 29px, #e2c97f 30px);
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-top: 0;
+  padding-bottom: 0;
+  & > div,
+  & > label {
+    padding-top: 5px;
+    padding-bottom: 4px;
+    line-height: 20px;
+    font-size: 12px;
+  }
 }
 
 .sticky-note-box {
+  font-family: sans-serif;
   position: absolute;
   z-index: 10001;
   min-width: 180px;
@@ -31,6 +78,7 @@
   border-radius: "8px";
 }
 #sticky-note-modal {
+  font-family: monospace;
   position: fixed;
   top: 0;
   left: 0;
@@ -63,37 +111,98 @@
   z-index: 10000;
   pointer-events: auto;
 }
-.import-export-bar {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  position: absolute;
-  top: 20px;
-  right: 20px;
-}
-.action-bar {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-}
-.dash-note {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 10px;
+/* dash styles */
+#notezzz-dashboard {
+  font-family: sans-serif;
+  padding: 20px;
   background: #fff7aa;
-  border: 1px solid #000;
-}
-.accordion-header {
-  cursor: pointer;
-  font-weight: bold;
-  margin: 8px 0;
-  background: #f0f0f0;
-  padding: 6px;
-  border-radius: 4px;
+  button,
+  input {
+    font-family: sans-serif;
+    border-radius: 8px;
+    box-sizing: border-box;
+  }
+  button {
+    background: #e2c97f;
+    border: 1px solid #ccc;
+    padding: 4px 8px;
+    cursor: pointer;
+    &:hover {
+      background: #ccc;
+    }
+  }
+  .site-group {
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    .note {
+      margin-left: 10px;
+      padding: 5px;
+      background: #fdf6c3;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      .selector {
+        font-size: 12px;
+        color: #777;
+      }
+    }
+  }
+  .import-export-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+  }
+  .action-bar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+  }
+  .pathname-group {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+  }
+  .dash-note {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 4px 10px;
+    background: #e2c97f;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    & + .dash-note {
+      margin-top: 4px;
+    }
+  }
+  #notesContainer {
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
+  }
+  .accordion-header {
+    font-family: sans-serif;
+    cursor: pointer;
+    font-weight: bold;
+    background: #e2c97f;
+    padding: 10px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    a {
+      color: #000;
+    }
+  }
 }
